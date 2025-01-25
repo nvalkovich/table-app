@@ -1,27 +1,32 @@
 import express from "express";
 import { AppDataSource } from "./data-source";
 import "reflect-metadata";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { AuthController } from './controllers/AuthController';
+import resources from "./resources";
+import {Routes} from "./types";
 
 const app = express();
 const port = 3000;
 
-app.use(express.json());
+const serverMessages = resources.messages.server;
+const errorMessages = resources.errors;
+const localhost = `http://localhost:${port}`
 
-app.get("/", (req, res) => {
-    res.send("Server works!");
+app.use(express.json());
+app.post(Routes.register, AuthController.register);
+
+app.get(Routes.base, (req, res) => {
+    res.send(serverMessages.serverWorks);
 });
 
 AppDataSource.initialize()
     .then(() => {
-        console.log("Connected");
+        console.log(serverMessages.dbConnected);
 
         app.listen(port, () => {
-            console.log(`Server starts at http://localhost:${port}`);
+            console.log(`${serverMessages.serverRunning} ${localhost}`);
         });
     })
     .catch((error) => {
-        console.error("Error:", error);
+        console.error(`${errorMessages.error}`, error);
     });
