@@ -1,9 +1,12 @@
 export enum StatusCodes {
-    created = 201,
-    badRequest = 400
+  ok = 200,
+  created = 201,
+  badRequest = 400,
+  unauthorized = 401,
 }
 
 export enum Routes {
-    base = '/',
-    register = '/register'
+  base = "/",
+  register = "/register",
+  login = "/login",
 }

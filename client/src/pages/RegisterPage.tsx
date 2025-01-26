@@ -1,7 +1,11 @@
-import RegisterForm from '../components/RegisterForm';
+import RegisterForm from '../components/forms/RegisterForm';
 
-const RegisterPage = () => {
-    return <RegisterForm />;
+interface RegisterFormProps {
+    setIsAuthenticated: (isAuthenticated: boolean) => void; // Принимаем setIsAuthenticated
+}
+
+const RegisterPage = ({ setIsAuthenticated }: RegisterFormProps) => {
+    return <RegisterForm setIsAuthenticated={setIsAuthenticated} />;
 };
 
 export default RegisterPage;

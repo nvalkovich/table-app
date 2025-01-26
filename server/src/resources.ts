@@ -1,25 +1,23 @@
 const resources = {
-    errors: {
-        error: 'Error: ',
-        unknown: 'Unknown error',
-        validation: {
-            validationError: 'Validation error',
-        },
-        auth: {
-            userExist: "User with this email already exists",
-            failedJWT: "Failed to create JWT token"
-        }
+  errors: {
+    error: "Error: ",
+    unknown: "Unknown error",
+    validation: {
+      validationError: "Validation error",
     },
-    messages: {
-        server: {
-            serverWorks: "Server is up and running!",
-            dbConnected: "Successfully connected to the database!",
-            serverRunning: "Server is running at: ",
-
-        }
-    }
-}
+    auth: {
+      userExist: "User with this email already exists",
+      failedJWT: "Failed to create JWT token",
+      invalidCredentials: "Invalid credentials!",
+    },
+  },
+  messages: {
+    server: {
+      serverWorks: "Server is up and running!",
+      dbConnected: "Successfully connected to the database!",
+      serverRunning: "Server is running at: ",
+    },
+  },
+};
 
 export default resources;
-
-

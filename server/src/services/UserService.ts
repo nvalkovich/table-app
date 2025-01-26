@@ -1,45 +1,53 @@
-import { User } from '../entities/User';
-import bcrypt from 'bcrypt';
-import { AppDataSource } from '../data-source';
-import {Repository} from "typeorm";
+import { User } from "../entities/User";
+import bcrypt from "bcrypt";
+import { AppDataSource } from "../data-source";
+import { Repository } from "typeorm";
 import resources from "../resources";
 
 export interface userCreatingData {
-    email: string;
-    name: string;
-    password: string;
+  email: string;
+  name: string;
+  password: string;
 }
 
 export class UserService {
-    private static userRepository: Repository<User>;
+  private static userRepository: Repository<User>;
 
-    static async register({email, name, password}: userCreatingData) {
-      const userRepository = AppDataSource.getRepository(User);
-      this.userRepository = userRepository;
+  static {
+    this.userRepository = AppDataSource.getRepository(User);
+  }
 
-      await this.isUserExist(email);
+  static async register({ email, name, password }: userCreatingData) {
+    await this.isUserExist(email);
 
-      const hashedPassword  = await this.createHash(password);
-      const user = this.createUser({ email, name, password: hashedPassword });
+    const hashedPassword = await this.createHash(password);
+    const user = this.createUser({ email, name, password: hashedPassword });
 
-      return userRepository.save(user);
+    return this.userRepository.save(user);
+  }
+
+  private static async isUserExist(email: string) {
+    const existingUser = await this.findByEmail(email);
+
+    if (existingUser) {
+      throw new Error(resources.errors.auth.userExist);
     }
+  }
 
-    private static async isUserExist (email: string) {
-        const existingUser = await this.userRepository.findOne({ where: { email } });
+  static async findByEmail(email: string): Promise<User | null> {
+    console.log("попали в findByEmail");
+    return (
+      (await UserService.userRepository.findOne({ where: { email } })) || null
+    );
+  }
 
-        if (existingUser) {
-            throw new Error(resources.errors.auth.userExist);
-        }
-    }
+  private static async createHash(value: string) {
+    const SALT_ROUNDS = 10;
 
-    private static async createHash (value: string) {
-        const SALT_ROUNDS = 10;
+    return await bcrypt.hash(value, SALT_ROUNDS);
+  }
 
-        return await bcrypt.hash(value, SALT_ROUNDS);
-    }
-
-    private static createUser (userData: userCreatingData ) {
-        return this.userRepository.create(userData)
-    }
+  private static createUser(userData: userCreatingData) {
+    return this.userRepository.create(userData);
+  }
 }
