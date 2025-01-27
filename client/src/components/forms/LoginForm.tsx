@@ -4,10 +4,8 @@ import { login } from '../../services/auth/authService';
 import { resources } from '../../common/resources';
 import { AuthForm } from './common/AuthForm';
 import { InputField } from './common/InputField';
-import {
-    handleLoginSuccess,
-    handleError,
-} from '../../services/auth/utils/authHelpers';
+import { handleLoginSuccess } from '../../utils/authHelpers';
+import { handleError } from '../../utils/errorHandlingHelpers';
 
 interface LoginFormProps {
     setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -22,6 +20,7 @@ const LoginForm = ({ setIsAuthenticated }: LoginFormProps) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrors({});
 
         try {
             const data = await login(email, password);

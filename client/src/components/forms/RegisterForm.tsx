@@ -4,10 +4,8 @@ import { register } from '../../services/auth/authService';
 import { resources } from '../../common/resources';
 import { AuthForm } from './common/AuthForm';
 import { InputField } from './common/InputField';
-import {
-    handleRegistrationSuccess,
-    handleError,
-} from '../../services/auth/utils/authHelpers';
+import { handleRegistrationSuccess } from '../../utils/authHelpers';
+import { handleError } from '../../utils/errorHandlingHelpers';
 
 interface RegisterFormProps {
     setIsAuthenticated: (isAuthenticated: boolean) => void;

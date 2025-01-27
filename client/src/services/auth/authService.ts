@@ -1,49 +1,76 @@
-import { ApiRoutes, ErrorTypes, HTTPMethods } from '../../common/types';
+import {
+    ApiError,
+    ApiRoutes,
+    ErrorTypes,
+    HTTPMethods,
+    User,
+} from '../../types/types';
 import { resources } from '../../common/resources';
+
 const toastifyErrors = resources.toastify.errors;
 
-export const register = async (
-    name: string,
-    email: string,
-    password: string,
-) => {
-    const response = await fetch(ApiRoutes.register, {
-        method: HTTPMethods.post,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
+export const jsonHeader = {
+    'Content-Type': 'application/json',
+};
+
+const fetchApi = async <T>(
+    url: string,
+    method: HTTPMethods = HTTPMethods.post,
+    body?: object,
+): Promise<T> => {
+    const response = await fetch(url, {
+        method,
+        headers: jsonHeader,
+        body: body ? JSON.stringify(body) : undefined,
     });
 
     if (!response.ok) {
-        const data = await response.json();
+        const data: ApiError = await response.json();
         throw new Error(
             data.message === ErrorTypes.ValidationError
                 ? JSON.stringify(data)
-                : data.message || toastifyErrors.registration,
+                : data.message || toastifyErrors.errorOccured,
         );
     }
 
     return await response.json();
 };
 
-export const login = async (email: string, password: string) => {
-    const response = await fetch(ApiRoutes.login, {
-        method: HTTPMethods.post,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-        const data = await response.json();
-        throw new Error(
-            data.message === ErrorTypes.ValidationError
-                ? JSON.stringify(data)
-                : data.message || toastifyErrors.login,
-        );
+const handleApiRequest = async <T>(
+    url: string,
+    method: HTTPMethods,
+    body: object,
+    errorMessage: string,
+): Promise<T> => {
+    try {
+        return await fetchApi<T>(url, method, body);
+    } catch (error) {
+        throw new Error(error instanceof Error ? error.message : errorMessage);
     }
+};
 
-    return await response.json();
+export const register = async (
+    name: string,
+    email: string,
+    password: string,
+) => {
+    return handleApiRequest<{ user: User; token: string }>(
+        ApiRoutes.register,
+        HTTPMethods.post,
+        { name, email, password },
+        toastifyErrors.registration,
+    );
+};
+
+export const login = async (email: string, password: string) => {
+    const data = await handleApiRequest<{ user: User; token: string }>(
+        ApiRoutes.login,
+        HTTPMethods.post,
+        { email, password },
+        toastifyErrors.login,
+    );
+    return {
+        token: data.token,
+        user: data.user,
+    };
 };

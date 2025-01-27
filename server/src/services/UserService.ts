@@ -1,3 +1,5 @@
+/// <reference path="../types/express.d.ts" />
+
 import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../data-source";
@@ -35,7 +37,6 @@ export class UserService {
   }
 
   static async findByEmail(email: string): Promise<User | null> {
-    console.log("попали в findByEmail");
     return (
       (await UserService.userRepository.findOne({ where: { email } })) || null
     );
@@ -49,5 +50,15 @@ export class UserService {
 
   private static createUser(userData: userCreatingData) {
     return this.userRepository.create(userData);
+  }
+
+  static async findById(id: number): Promise<User | null> {
+    const userRepository = AppDataSource.getRepository(User);
+    return await userRepository.findOneBy({ id });
+  }
+
+  static async updateUser(id: number, updateData: Partial<User>) {
+    const userRepository = AppDataSource.getRepository(User);
+    await userRepository.update(id, updateData);
   }
 }

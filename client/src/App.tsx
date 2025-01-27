@@ -3,7 +3,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import { useEffect, useState } from 'react';
-import { Routes as RoutePaths } from './common/types';
+import { Routes as RoutePaths } from './types/types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {

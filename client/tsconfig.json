@@ -10,7 +10,9 @@
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "types": ["vite/client"]
+        "types": ["vite/client"],
+        "typeRoots": ["./node_modules/@types", "./src/types"],
     },
-    "include": ["src"]
+    "include": ["src", "vite-env.d.ts"]
 }
+
