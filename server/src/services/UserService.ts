@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../data-source";
 import { Repository } from "typeorm";
 import resources from "../resources";
+import { pgSQLDuplicateKeyErrorCode } from "../constants";
+import { QueryFailedError } from "typeorm";
 
 export interface userCreatingData {
   email: string;
@@ -20,19 +22,20 @@ export class UserService {
   }
 
   static async register({ email, name, password }: userCreatingData) {
-    await this.isUserExist(email);
+    try {
+      const hashedPassword = await this.createHash(password);
+      const user = this.createUser({ email, name, password: hashedPassword });
 
-    const hashedPassword = await this.createHash(password);
-    const user = this.createUser({ email, name, password: hashedPassword });
-
-    return this.userRepository.save(user);
-  }
-
-  private static async isUserExist(email: string) {
-    const existingUser = await this.findByEmail(email);
-
-    if (existingUser) {
-      throw new Error(resources.errors.auth.userExist);
+      await this.userRepository.save(user);
+      return user;
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        error.driverError.code === pgSQLDuplicateKeyErrorCode
+      ) {
+        throw new Error(resources.errors.auth.userExist);
+      }
+      throw error;
     }
   }
 
