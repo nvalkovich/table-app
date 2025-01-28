@@ -7,8 +7,10 @@ import {
 } from "typeorm";
 import { UserStatus } from "../types/types";
 
+const IDX_USER_EMAIL = "IDX_USER_EMAIL";
+
 @Entity()
-@Index("IDX_USER_EMAIL", ["email"], { unique: true })
+@Index(IDX_USER_EMAIL, ["email"], { unique: true })
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;

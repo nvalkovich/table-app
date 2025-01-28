@@ -1,7 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { Table, Form } from 'react-bootstrap';
+import React, { useState, useMemo } from 'react';
+import { Table, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { User, CurrentUser } from '../../../types/types';
 import { resources } from '../../../common/resources';
+import { formatDistanceToNow, format } from 'date-fns';
+import { DATE_FORMAT } from '../../../common/constants';
 
 interface UserTableProps {
     users: User[];
@@ -35,9 +37,13 @@ const UserTable = ({ users, onSelectUsers, currentUser }: UserTableProps) => {
     const isAllSelected =
         selectedIds.length === users.length && users.length > 0;
 
-    const formatDate = useCallback((date: Date) => {
-        return new Date(date).toLocaleString();
-    }, []);
+    const formatTimeAgo = (date: Date) => {
+        return formatDistanceToNow(date, { addSuffix: true });
+    };
+
+    const formatDate = (date: Date) => {
+        return format(date, DATE_FORMAT);
+    };
 
     const sortedUsers = useMemo(() => {
         return users?.sort((a, b) => {
@@ -76,31 +82,48 @@ const UserTable = ({ users, onSelectUsers, currentUser }: UserTableProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedUsers.map((user) => (
-                        <tr
-                            key={user.id}
-                            style={{
-                                fontStyle:
-                                    user.id === currentUser?.id
-                                        ? 'italic'
-                                        : 'inherit',
-                            }}
-                        >
-                            <td>
-                                <Form.Check
-                                    type="checkbox"
-                                    checked={selectedIds.includes(user.id)}
-                                    onChange={() => handleSelect(user.id)}
-                                />
-                            </td>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
-                            <td>{user.status}</td>
-                            <td>
-                                {formatDate(user.lastLoginAt || user.createdAt)}
-                            </td>
-                        </tr>
-                    ))}
+                    {sortedUsers.map((user) => {
+                        const loginDate = user.lastLoginAt || user.createdAt;
+                        const formattedDate = formatDate(new Date(loginDate));
+                        const timeAgo = formatTimeAgo(new Date(loginDate));
+
+                        return (
+                            <tr
+                                key={user.id}
+                                style={{
+                                    fontStyle:
+                                        user.id === currentUser?.id
+                                            ? 'italic'
+                                            : 'inherit',
+                                }}
+                            >
+                                <td>
+                                    <Form.Check
+                                        type="checkbox"
+                                        checked={selectedIds.includes(user.id)}
+                                        onChange={() => handleSelect(user.id)}
+                                    />
+                                </td>
+                                <td>{user.name}</td>
+                                <td>{user.email}</td>
+                                <td>{user.status}</td>
+                                <td>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={
+                                            <Tooltip id={`tooltip-${user.id}`}>
+                                                {formattedDate}
+                                            </Tooltip>
+                                        }
+                                    >
+                                        <span style={{ cursor: 'pointer' }}>
+                                            {timeAgo}
+                                        </span>
+                                    </OverlayTrigger>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </Table>
         </div>
