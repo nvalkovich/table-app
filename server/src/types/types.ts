@@ -21,6 +21,7 @@ export enum Routes {
   base = "/",
   register = "/register",
   login = "/login",
+  dashboard = "/dashboard",
   users = "/users",
   currentUser = "/users/current",
   blockUsers = "/users/block",

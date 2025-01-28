@@ -17,7 +17,7 @@ const localhost = `http://localhost:${port}`;
 
 app.use(express.json());
 
-const staticFilesPath = path.join(__dirname, "../../client/dist"); // Путь к статическим файлам
+const staticFilesPath = path.join(__dirname, "../../client/dist");
 app.use(express.static(staticFilesPath));
 
 app.post(ApiRoutes.register, AuthController.register);
@@ -28,6 +28,10 @@ app.get(Routes.register, (req, res) => {
 });
 
 app.get(Routes.login, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+});
+
+app.get(Routes.dashboard, (req, res) => {
   res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
 });
 

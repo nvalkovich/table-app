@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Table, Form } from 'react-bootstrap';
-import { User, CurrentUser } from '../../types/types';
-import { resources } from '../../common/resources';
-import { useMemo, useCallback } from 'react';
+import { User, CurrentUser } from '../../../types/types';
+import { resources } from '../../../common/resources';
 
 interface UserTableProps {
     users: User[];
