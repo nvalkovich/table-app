@@ -2,12 +2,11 @@ import React from 'react';
 import { Container } from 'react-bootstrap';
 import Dashboard from '../components/dashboard/Dashboard';
 import LogoutButton from '../components/buttons/LogoutButton';
-import { Routes } from '../types/types';
 import { logoutWithRedirect } from '../utils/authHelpers';
 
 const DashboardPage = () => {
     const handleLogout = () => {
-        logoutWithRedirect(Routes.login);
+        logoutWithRedirect();
     };
 
     return (

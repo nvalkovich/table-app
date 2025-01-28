@@ -7,19 +7,18 @@ import {
     deleteUsers,
     fetchCurrentUser,
 } from '../services/user/userService';
-import { UserStatus, Routes, User } from '../types/types';
+import { UserStatus, User } from '../types/types';
 import { logoutWithRedirect } from '../utils/authHelpers';
 import { performAction, checkSelectedIds } from '../utils/userHelpers';
 
 const useUserActions = (users: User[], setUsers: (users: User[]) => void) => {
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const { errors, success, warn } = resources.toastify;
+
     const checkUserStatus = useCallback(async () => {
         const currentUserData = await fetchCurrentUser();
         if (!currentUserData || currentUserData.status === UserStatus.blocked) {
-            logoutWithRedirect(
-                currentUserData ? Routes.login : Routes.register,
-            );
+            logoutWithRedirect();
             return false;
         }
         return true;
