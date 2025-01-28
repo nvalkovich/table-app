@@ -19,9 +19,9 @@ export const getTokenFromLS = () => {
     return localStorage.getItem(AUTH_TOKEN_KEY);
 };
 
-export const logoutWithRedirect = (route: Routes) => {
+export const logoutWithRedirect = () => {
     removeTokenFromLS();
-    window.location.href = route;
+    window.location.href = Routes.login;
 };
 
 export const handleLoginSuccess = (
