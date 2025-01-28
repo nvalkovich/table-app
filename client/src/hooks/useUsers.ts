@@ -7,10 +7,12 @@ import { resources } from '../common/resources';
 const useUsers = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [currentUser, setCurrentUser] = useState<CurrentUser | undefined>();
+    const [isLoading, setIsLoading] = useState(true);
     const { errors: toastifyErrors } = resources.toastify;
 
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             try {
                 const [usersData, currentUserData] = await Promise.all([
                     fetchUsers(),
@@ -22,6 +24,8 @@ const useUsers = () => {
                 toast.error(toastifyErrors.loadingUsers);
                 setUsers([]);
                 setCurrentUser(undefined);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -29,7 +33,7 @@ const useUsers = () => {
         // eslint-disable-next-line
     }, []);
 
-    return { users, currentUser, setUsers };
+    return { users, currentUser, setUsers, isLoading };
 };
 
 export default useUsers;

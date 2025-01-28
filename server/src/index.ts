@@ -3,31 +3,48 @@ import { AppDataSource } from "./data-source";
 import "reflect-metadata";
 import { AuthController } from "./controllers/AuthController";
 import resources from "./resources";
-import { Routes } from "./types/types";
+import { Routes, ApiRoutes } from "./types/types";
 import { UserController } from "./controllers/UserController";
 import { actionMiddleware } from "./middleware/actionMiddleware";
+import path from "path";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const serverMessages = resources.messages.server;
 const errorMessages = resources.errors;
 const localhost = `http://localhost:${port}`;
 
 app.use(express.json());
-app.post(Routes.register, AuthController.register);
-app.post(Routes.login, AuthController.login);
 
-app.get(Routes.currentUser, AuthController.getCurrentUser);
-app.get(Routes.users, UserController.getUsers);
+const staticFilesPath = path.join(__dirname, "../../client/dist");
+app.use(express.static(staticFilesPath));
 
-app.patch(Routes.blockUsers, actionMiddleware, UserController.blockUsers);
-app.patch(Routes.unblockUsers, actionMiddleware, UserController.unblockUsers);
-app.post(Routes.deleteUsers, actionMiddleware, UserController.deleteUsers);
+app.post(ApiRoutes.register, AuthController.register);
+app.post(ApiRoutes.login, AuthController.login);
 
-app.get(Routes.base, (req, res) => {
-  res.send(serverMessages.serverWorks);
+app.get(Routes.register, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
 });
+
+app.get(Routes.login, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+});
+
+app.get(Routes.dashboard, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+});
+
+app.get(ApiRoutes.currentUser, AuthController.getCurrentUser);
+app.get(ApiRoutes.users, UserController.getUsers);
+
+app.patch(ApiRoutes.blockUsers, actionMiddleware, UserController.blockUsers);
+app.patch(
+  ApiRoutes.unblockUsers,
+  actionMiddleware,
+  UserController.unblockUsers,
+);
+app.post(ApiRoutes.deleteUsers, actionMiddleware, UserController.deleteUsers);
 
 AppDataSource.initialize()
   .then(() => {
